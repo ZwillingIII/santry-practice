@@ -7,17 +7,28 @@ use Monolog\Handler\StreamHandler;
 
 class Errors {
   function __construct() {
-    // echo "Hello";
-    echo $this->getDate();
+    echo "Залогировал тебя, не отвертишься";
   }
   
+  /**
+   * Получить сегодняшнюю дату
+   */
   private function getDate() {
     return date('d-m-Y');
   }
 
-  public function writeLog() {
+  /**
+   * Запись лога
+   * 
+   * @param {string} $data
+   */
+  public function writeLog($data) {
     $log = new Logger('Test');
 
-    $log->pushHandler(new StreamHandler('../../logs/test-'.$this->getDate().'.log', Level::Warning));
+    $log->pushHandler(new StreamHandler(__DIR__.$_ENV['LOG_PATH'].'/test-'.$this->getDate().'.log', Level::Warning));
+
+    $log->warning('Warning code '.$data);
+
+    echo 'Лог записан';
   }
 }
