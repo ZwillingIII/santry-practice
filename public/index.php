@@ -8,12 +8,6 @@ $dotenv->load();
 
 $errors = new Errors();
 
-// echo '<pre>';
-
-// print_r($_ENV);
-
-// echo '</pre>';
-
 \Sentry\init([
   'dsn' => $_ENV['SENTRY_DSN'],
   // Specify a fixed sample rate
@@ -27,5 +21,5 @@ $errors = new Errors();
 try {
   $this->functionFailsForSure();
 } catch (\Throwable $exception) {
-  $errors->writeLog((string)\Sentry\captureException($exception));
+  print_r($errors->writeLog((string)\Sentry\captureException($exception), 'info'));
 }

@@ -1,13 +1,14 @@
 <?php
 namespace App\Classes;
 
+use Exception;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
 class Errors {
   function __construct() {
-    echo "Залогировал тебя, не отвертишься";
+    // echo "Залогировал тебя, не отвертишься";
   }
   
   /**
@@ -21,14 +22,32 @@ class Errors {
    * Запись лога
    * 
    * @param {string} $data
+   * @param {string} $option Warning, Error, Info 
    */
-  public function writeLog($data) {
-    $log = new Logger('Test');
+  public function writeLog($data, $option = 'Warning') {
+    try {
+      $log = new Logger(ucfirst($option));
 
-    $log->pushHandler(new StreamHandler(__DIR__.$_ENV['LOG_PATH'].'/test-'.$this->getDate().'.log', Level::Warning));
+      $params = match(mb_strtolower(trim($option))) {
+        'warning' => [
+          'path' => $_ENV['LOG_WARNING_PATH'],
+          'level' => Level::Warning,
+        ],
+        'error' => [
+          'path' => $_ENV['LOG_ERROR_PATH'],
+          'level' => Level::Warning,
+        ],
+        'info' => [
+          'path' => $_ENV['LOG_INFO_PATH'],
+          'level' => Level::Info,
+        ]
+      };
 
-    $log->warning('Warning code '.$data);
+      $log->pushHandler(new StreamHandler(__DIR__.$_ENV['LOG_PATH'].$params['path'].'/test-'.$this->getDate().'.log', $params['level']));
 
-    echo 'Лог записан';
+      return "Статус логирования: ".$log->addRecord($params['level'], "CODE $data", []);
+    } catch (Exception $e) {
+      return "Ошибка логирования";
+    }
   }
 }
