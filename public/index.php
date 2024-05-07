@@ -21,6 +21,7 @@ try {
     $url = 'https://asd.bokus.ru';
     $response = $client->get($url);
     echo $response->getBody()->getContents();
+    echo '123';
 } catch (\GuzzleHttp\Exception\ClientException $e) {
 
     $logger->warning($e->getMessage());
