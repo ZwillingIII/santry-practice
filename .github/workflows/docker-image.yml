@@ -1,0 +1,22 @@
+name: Docker Image CI
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Copy env
+      run: cp .env.example .env
+    - name: Build the Docker image
+      run: docker-compose up -d
+    - name: echo docker images
+      run: docker ps
+    - name: install packages
+      run: docker exec test-app composer install
