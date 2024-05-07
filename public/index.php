@@ -1,25 +1,30 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
-use App\Classes\Errors;
-
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../');
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
-$errors = new Errors();
 
-\Sentry\init([
-  'dsn' => $_ENV['SENTRY_DSN'],
-  // Specify a fixed sample rate
-  'traces_sample_rate' => 1.0,
-  // Set a sampling rate for profiling - this is relative to traces_sample_rate
-  'profiles_sample_rate' => 1.0,
-]);
-
-// $a = 5/'fjdslfjsdlfs';
-
+$logger = new \App\Classes\Logger('front');
 try {
-  $this->functionFailsForSure();
-} catch (\Throwable $exception) {
-  print_r($errors->writeLog((string)\Sentry\captureException($exception), 'info'));
+    new \App\Classes\Logger($dotenv);
+} catch (Throwable $e) {
+
+    $logger->info('ahtung:' . $e->getMessage(), $e->getTrace());
+    echo $e->getMessage();
+}
+
+$logger = new \App\Classes\Logger('1c');
+try {
+    $client = new \GuzzleHttp\Client();
+
+    $url = 'https://asd.bokus.ru';
+    $response = $client->get($url);
+    echo $response->getBody()->getContents();
+    echo '123';
+} catch (\GuzzleHttp\Exception\ClientException $e) {
+
+    $logger->warning($e->getMessage());
+} catch (Throwable $e) {
+    $logger->error($e->getMessage());
 }
